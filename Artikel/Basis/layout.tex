@@ -1,0 +1,57 @@
+% Copyright 2009 Dominik Wagenfuehr <dominik.wagenfuehr@deesaster.org>
+% Dieses Dokument unterliegt der Creative-Commons-Lizenz
+% "Namensnennung-Weitergabe unter gleichen Bedingungen 3.0 Deutschland"
+% [http://creativecommons.org/licenses/by-sa/3.0/de/].
+
+% Textbereich setzen
+\geometry{text={182mm,261mm}}
+
+% Serifenschrift als Standard
+\renewcommand*{\familydefault}{\sfdefault}
+
+% TXTT als Typewriter-Standard
+\renewcommand*{\ttdefault}{txtt}
+
+% Spaltendefinition
+\setlength{\columnsep}{0.5cm}
+
+% Ueberschriften
+\titlespacing{\section}{0mm}{2em}{1em}
+\titlespacing{\subsection}{0em}{2.5mm}{0mm}
+\titleformat{\section}{\normalfont\Huge}{}{0mm}{}
+\titleformat{\subsection}{\normalfont\large\bfseries\scshape}{}{0mm}{}
+
+% Fuß- und Kopfzeile
+\pagestyle{fancy}
+\fancyhead{}
+\fancyhead[LE]{\PrintHeader{Kategorie}}
+\fancyfoot{}
+\fancyfoot[LE,RO]{\textbf{\textsc{\thepage}}}
+\fancyfoot[RE,LO]{\textsl{SuperMAG XX/2009}}
+\renewcommand*{\headrulewidth}{0.0pt}
+\renewcommand*{\footrulewidth}{0.0pt}
+
+% Listen
+\renewcommand*{\labelitemi}{\textcolor{\maincolor}{\footnotesize{}$\blacksquare$}}
+
+% Listingdefinitionen
+\lstdefinestyle{StyleListingBasic}{%
+     basicstyle=\ttfamily,       % Schriftstil
+     frame=single,               % einfacher Rahmen
+     framesep=1pt,               % Abstand des Rahmens
+     framerule=0.8pt,            % Linienstaerke des Rahmens
+     rulecolor=\color{dunkelgrau},  % Farbe der Rahmenlinie
+     breaklines=true,            % automatischen Umbruch aktivieren
+     breakindent=0pt             % Einrueckung nach Umbruch
+}
+
+\lstdefinestyle{StyleCommand}{%
+     style=StyleListingBasic,
+     backgroundcolor=\color{mittelgrau},  % Hintergrundfarbe
+     prebreak=\mbox{\textbackslash{}},    % \ als Umbruchzeichen
+}
+
+\lstdefinestyle{StyleListing}{%
+     style=StyleListingBasic,
+     backgroundcolor=\color{hellgelb},    % Hintergrundfarbe
+}

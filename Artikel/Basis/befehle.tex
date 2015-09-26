@@ -1,0 +1,375 @@
+% Copyright 2009 Dominik Wagenfuehr <dominik.wagenfuehr@deesaster.org>
+% Dieses Dokument unterliegt der Creative-Commons-Lizenz
+% "Namensnennung-Weitergabe unter gleichen Bedingungen 3.0 Deutschland"
+% [http://creativecommons.org/licenses/by-sa/3.0/de/].
+
+%%%%%%%%%%%%%%%
+% Farben
+%%%%%%%%%%%%%%%
+
+\definecolor{mittelblau}{rgb}{0.1,0.5,1.0}
+\definecolor{orange}{rgb}{1,0.39,0.04}
+\definecolor{hellgelb}{rgb}{1.0,1.0,0.9}
+\definecolor{hellgrau}{gray}{0.93}
+\definecolor{mittelgrau}{gray}{0.85}
+\definecolor{dunkelgrau}{gray}{0.35}
+\definecolor{url}{rgb}{0,0,0}
+
+% Hauptfarbe für die Seite
+\newcommand*{\maincolor}{mittelblau}
+\newcommand*{\maintextcolor}{white}
+
+\newcommand*{\SetMainColor}[1]{\renewcommand*{\maincolor}{#1}}
+\newcommand*{\SetMainTextColor}[1]{\renewcommand*{\maintextcolor}{#1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% neue Keyvalues
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newlength{\BildImageWidth}      % image width
+\newboolean{BildAbsolutePos}     % absolute position over paper width
+\newlength{\BildBoxWidth}        % Width of box with image caption
+\newcommand*{\BildBoxAlign}{}    % alignment of box
+
+\makeatletter
+\define@key{Bild}{width}{\setlength{\BildImageWidth}{#1}}
+\define@boolkey{Bild}{absolut}[true]{\setboolean{BildAbsolutePos}{#1}}
+\define@key{Bild}{boxwidth}{\setlength{\BildBoxWidth}{#1}}
+\define@choicekey{Bild}{boxalign}[\val\ba]{left,right}
+{%
+    \ifcase\ba\relax
+      \renewcommand*{\BildBoxAlign}{}
+    \or
+      \renewcommand*{\BildBoxAlign}{\hspace*{\fill}}
+    \fi
+}
+\makeatother
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Farbige Boxen
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Makro für eine farbige Box mit farbigem Text
+% Benutzung: \colbox{HINTERGRUNDFARBE}{SCHRIFTFARBE}{TEXT}
+% Beispiel: \colbox{black}{white}{Hallo}
+\newcommand{\colbox}[3]{\colorbox{#1}{\textcolor{#2}{#3}}}
+
+% Makro für eine farbige Box mit farbigem Rand und farbigem Text
+% Benutzung: \fcolbox{RAHMENFARBE}{HINTERGRUNDFARBE}{SCHRIFTFARBE}{TEXT}
+% Beispiel: \fcolbox{red}{black}{white}{Hallo}
+\newcommand{\fcolbox}[4]{\fcolorbox{#1}{#2}{\textcolor{#3}{#4}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Artikellayout-Definitionen
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Makro für die Großbuchstaben am Anfang eines Artikels
+% Benutzung: \Initial{BUCHSTABE}
+% Beispiel: \Initial{M}
+\newcommand{\Initial}[1]{%
+    \setcounter{DefaultLines}{3} %
+    \renewcommand*{\DefaultLoversize}{-0.2} %
+    \setlength{\fboxsep}{0.4em}%
+    \lettrine[nindent=-0.1mm,findent=0.7em,lraise=0.3]%
+    {%
+        \colbox{\maincolor}{\maintextcolor}{%
+            \begin{minipage}{0.9em}%
+            \centering{}%
+            #1 %
+            \end{minipage}%
+        }%
+    }%
+    {}%
+}
+
+% Trenner für Abschnitt
+% Benutzung: \Abschnitt{TEXT}
+% Beispiel: \Abschnitt{Ubuntu}
+\newcommand{\Abschnitt}[1]{%
+    \setlength{\fboxsep}{0.2em}%
+    \subsection*{\colbox{\maincolor}{\maintextcolor}{\parbox{\linewidth-2\fboxsep-2\fboxrule}{#1}}}%
+    \noindent{}%
+}
+
+% Darstellung des Autors/der Autoren
+% Benutzung: \Autor{NAME}
+% Beispiel: \Autor{Max Mustermann}
+\newcommand{\Autor}[1]
+{%
+    \begin{spacing}{1.2}%
+        \begin{description}%
+            \item[\textbf{Von:}] #1%
+        \end{description}%
+    \end{spacing}%
+}
+
+% Kurze Einleitung zum Text
+% Benutzung: \Einleitung{Text}
+% Beispiel: \Einleitung{Blah blah blah.}
+\newcommand{\Einleitung}[1]
+{%
+    \begin{spacing}{2}%
+        \begin{flushleft}%
+            {\huge #1}%
+        \end{flushleft}%
+    \end{spacing}%
+    \vfill{}%
+    \columnbreak{}%
+}
+
+% Artikelumgebung
+% Benutzung: \begin{Artikel}{PDFMARKE}{ÜBERSCHRIFT}{AUTOR/EN}{EINLEITUNG}
+%            ...
+%            \end{Artikel}
+% Beispiel: \begin{Artikel}{2009_10_linux}
+%           {Linux auf dem Vormarsch}
+%           {Max Mustermann}
+%           {Blah blah blah.}
+%           ...
+%           \end{Artikel}
+\newenvironment{Artikel}[4]
+{%
+    \pdfbookmark[2]{#2}{#1}
+    \setcounter{linkcounter}{1}
+    \begin{multicols*}{4}[\section*{#2}]
+        \begin{spacing}{1.05}
+            \Autor{#3}
+            \vskip-3em{}%
+            \Einleitung{#4}
+}
+{%
+        \end{spacing}
+    \end{multicols*}
+}
+
+% Bildunterschrift für Bilder
+% \Autoreninfo[BREITE]{AUTOR/EN}{TEXT}
+\newcommand{\Autoreninfo}[3][1.0]{%
+    \setlength{\fboxsep}{0pt}%
+    \vskip1em{}%
+    \noindent\colbox{hellgrau}{black}{%
+        \parbox{#1\linewidth-2\fboxsep}{%
+            \setlength{\fboxsep}{4pt}%
+            \colbox{dunkelgrau}{white}{%
+                \parbox{\linewidth-2\fboxsep}{{\Large #2}}%
+            }\\[0.3em]%
+            \colbox{hellgrau}{black}{%
+                \parbox{\linewidth-2\fboxsep}{#3}%
+            }\\[0.3em]%
+        }%
+    }%
+} 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Bilder
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Bildunterschrift für Bilder
+% \Bildunterschrift{BREITE}{BILDUNTERSCHRIFT1}{BILDUNTERSCHRIFT2}
+\newcommand{\Bildunterschrift}[3]
+{%
+    \setlength{\fboxsep}{5pt}%
+    \setlength{\fboxrule}{0.8pt}%
+    \noindent{}%
+    \fcolbox{black}{dunkelgrau}{white}{%
+        \parbox{#1-2\fboxsep-2\fboxrule}{%
+            \begin{flushleft}%
+                \vskip-5pt{}%
+                \textbf{\MakeUppercase{#2}} | #3%
+            \end{flushleft}%
+            \vskip-5pt{}%
+        }%
+    }%
+}
+
+% Verarbeitet die optionalen Parameter eines Bildes (nur für interne Verwendung)
+\newcommand*{\CalcBildValues}[1]
+{%
+    \presetkeys{Bild}{width=\linewidth,absolut=false,boxwidth=0pt,boxalign=left}{}%
+    \setkeys{Bild}{#1}%
+    \ifthenelse{\boolean{BildAbsolutePos}}
+    {%
+        \setlength{\BildImageWidth}{\paperwidth}%
+    }{}%
+    \ifdim\BildBoxWidth=0pt{}%
+        \setlength{\BildBoxWidth}{\BildImageWidth}%
+    \fi{}%
+}
+
+% Einbinden von Bildern mit Bildunterschrift (nur für interne Verwendung)
+% \Bild[BREITE]{BILD.PNG}{BILDUNTERSCHRIFT1}{BILDUNTERSCHRIFT2}
+\newcommand{\BildInternal}[3]
+{%
+    \includegraphics[width=\BildImageWidth]{Bilder/#1}\\[-2px]
+    \BildBoxAlign\Bildunterschrift{\BildBoxWidth}{#2}{#3}\\
+}
+
+% Definition neuer Länge für Abstand bei Bild.
+\newlength{\VSkipHeight}
+
+% Einbinden von Bildern mit Bildunterschrift
+% \Bild[OPTIONEN]{BILD.PNG}{BILDUNTERSCHRIFT1}{BILDUNTERSCHRIFT2}
+\newcommand{\Bild}[4][]
+{%
+    \CalcBildValues{#1}%
+    \ifthenelse{\boolean{BildAbsolutePos}}
+    {%
+        \begin{textblock}{1}(0,0)%
+    }{}%
+    \noindent{}%
+    \parbox{\paperwidth}{\BildInternal{#2}{#3}{#4}}%
+    \ifthenelse{\boolean{BildAbsolutePos}}
+    {%
+        \end{textblock}%
+        \settoheight{\VSkipHeight}{\BildInternal{#2}{#3}{#4}}%
+        \addtolength{\VSkipHeight}{-3em}%
+        \vspace*{\VSkipHeight}%
+    }{}%
+}
+
+% Makro für Absätze (halbe Leerzeilen) bei mehrspaltigen Bildern
+% Benutzung: \Einschub{LEERZEILEN}{RECHTS_ODER_LINKS}{BREITE}
+% Beispiel: \Einschub{26}{l}{1cm}
+\newcommand{\Einschub}[3]
+{%
+    \begin{wrapfigure}[#1]{#2}{#3}
+    \vfill
+    \end{wrapfigure}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Kopf-/Fußleiste
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Setzt die aktuell Kategorie und Farbthema
+\newcommand*{\SetKategorie}[3]{%
+    \fancyhead{}%
+    \fancyhead[LE]{\PrintHeader{#1}}%
+    \pdfbookmark[1]{#1}{#1}%
+    \SetMainColor{#2}%
+    \SetMainTextColor{#3}%
+}
+
+% Druckt die aktuelle Kopfleiste nochmal.
+\newcommand{\PrintHeader}[1]{%
+    \begin{textblock}{1}(0,0)%
+        \begin{sideways}%
+            \setlength{\fboxsep}{3pt}
+            \colbox{\maincolor}{\maintextcolor}{{\Huge \textsl{\textbf{#1}}}}%
+            \hspace*{1.5cm}%
+        \end{sideways}%
+    \end{textblock}%
+}
+
+% Makro für Monat in Fußzeile
+\newcommand{\SetFusszeile}[1]{%
+    \fancyfoot[RE,LO]{\textsl{SuperMAG #1}}
+    \hypersetup{pdftitle={SuperMag #1}}
+}
+
+%%%%%%%%%%%%%%%%%%%%
+% Links
+%%%%%%%%%%%%%%%%%%%%
+
+% neuer Zähler für Links in einem Artikel
+\newcounter{linkcounter}
+
+% Makro für Links innerhalb eines Textes
+% Benutzung: \Link{URL}
+\newcommand*{\Link}[2][\arabic{linkcounter}\stepcounter{linkcounter}]{~\href{#2}{[#1]}}
+
+% Makro für den Text "Verweise"
+% Benutzung: \begin{Quellen} ... \end{Quellen}
+\newenvironment{Quellen}[1][\linewidth]
+{%
+    \noindent{}%
+    \begin{minipage}{#1}
+        \hfill{}%
+        \begin{tabular}{r}
+            \textcolor{dunkelgrau}{\normalfont\large\scshape Verweise} \\[-1.9ex]
+            \textcolor{\maincolor}{\rule{2cm}{1.5pt}}\\[-0.8ex]
+        \end{tabular}
+        \renewcommand*{\labelenumi}{[\theenumi]}
+        \begin{small}
+            \begin{Aufzaehlung}
+}
+{%
+            \end{Aufzaehlung}
+        \end{small}
+        \renewcommand*{\labelenumi}{\theenumi.}
+    \end{minipage}
+}
+
+% Makro für Quellen am Ende eines Textes
+% Benutzung: \Quelle{Bezeichung}{URL}{Linktext}
+\newcommand*{\Quelle}[3]{\item #1{}: \href{#2}{#3}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Allgemeine Definitionen
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% freiesMagazin-Schriftzug
+\newcommand*{\fm}{\mbox{\textbf{\textsf{\textcolor{dunkelgrau}{freies}}}\textsf{\textcolor{orange}{Magazin}}}}
+
+% Sanfter Zeilenumbruch
+% Benutzung: \sbreak[ABSTAND]
+\newcommand{\sbreak}[1][-1em]{\linebreak[4]\\[#1]}
+
+% Spalte ausfüllen und umbrechen.
+% Benutzung: \cbreakfill
+\newcommand{\cbreakfill}{\vfill\columnbreak}
+
+% Zeile sanft beenden und dann Spalte umbrechen.
+% Benutzung: \csbreakfill
+\newcommand{\csbreakfill}{\sbreak\cbreakfill\noindent}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Textstil
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Umgebung für Befehlskästen
+% Benutzung: \begin{Befehl}[BREITE] ... \end{Befehl}
+\lstnewenvironment{Befehl}[1][1]
+{\lstset{style=StyleCommand,linewidth=#1\linewidth}}
+{}
+
+% Befehle im Fließtext
+\newcommand*{\term}[1]{%
+    \lstinline[style=StyleListingBasic,basicstyle=\ttfamily\bfseries]|#1|%
+}
+
+% Umgebung für Listings mit Zeilennummern
+% Benutzung: \begin{Listing}[BREITE] ... \end{Listing}
+\lstnewenvironment{Listing}[1][1]
+{\lstset{style=StyleListing,linewidth=#1\linewidth}}
+{}
+
+% Makro für Menueinträge
+\newcommand*{\Menu}[1]{\textit{"`#1"'}}
+
+% Makro für Tasten
+\newcommand*{\Taste}[1]{{\small\keystroke{#1}}}
+
+% Makro für Pakete
+\newcommand*{\Paket}[1]{\textbf{\mbox{#1}}}
+
+% Makro für Auflistungen
+% Benutzung: \begin{Auflistung}
+% \item Item 1
+% \item Item 2
+% \end{Auflistung}
+\newenvironment{Auflistung}
+{\begin{itemize}[itemsep=0.0em,leftmargin=*]}
+{\end{itemize}}
+
+% Makro für Aufzählungen
+% Benutzung:
+% \begin{Aufzaehlung}
+% \item Item 1
+% \item Item 2
+% \end{Aufzaehlung}
+\newenvironment{Aufzaehlung}
+{\begin{enumerate}[itemsep=0.0em,leftmargin=*]}
+{\end{enumerate}}
+
+
